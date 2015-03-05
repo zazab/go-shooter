@@ -125,19 +125,13 @@ func (s *Shooter) prepareWatcher() {
 	if s.PrepareFunc == nil {
 		panic("prepare func not set")
 	}
+
 	for {
-		select {
-		case req := <-s.prepChan:
-			s.prepMut.Lock()
-			s.prepared = append(s.prepared, req)
-			s.prepMut.Unlock()
-		case <-time.After(2 * time.Second):
-			s.prepMut.Lock()
-			s.launchMut.Lock()
-			log.Printf("something bad. Got %d prepared, %d runed\n", len(s.prepared), len(s.launched))
-			s.prepMut.Unlock()
-			s.launchMut.Unlock()
-		}
+		req := <-s.prepChan
+		s.prepMut.Lock()
+		s.prepared = append(s.prepared, req)
+		s.prepMut.Unlock()
+
 	}
 }
 
